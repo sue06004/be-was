@@ -22,15 +22,9 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String line = br.readLine();
-            String url = HttpRequestUtils.getUrl(line);
-
-            logger.debug("request line: {}", line);
-            while (!line.equals("")) {
-                line = br.readLine();
-                logger.debug("header : {}", line);
-            }
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            String url = HttpRequestUtils.getUrl(bufferedReader);
+            HttpRequestUtils.DebugBufferedReader(bufferedReader);
 
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = Files.readAllBytes(new File(templatesDirectoryPath + url).toPath());

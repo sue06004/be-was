@@ -10,7 +10,7 @@ import util.HttpRequestUtils;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
+    private static final String templatesDirectoryPath = "src/main/resources/templates";
     private Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
@@ -25,14 +25,15 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String line = br.readLine();
             String url = HttpRequestUtils.getUrl(line);
+
             logger.debug("request line: {}", line);
-            while(!line.equals("")){
+            while (!line.equals("")) {
                 line = br.readLine();
                 logger.debug("header : {}", line);
             }
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = Files.readAllBytes(new File("/Users/kimwoohyuk/be-was/src/main/resources/templates"+url).toPath());
+            byte[] body = Files.readAllBytes(new File(templatesDirectoryPath + url).toPath());
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {

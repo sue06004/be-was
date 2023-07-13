@@ -22,12 +22,6 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            /**
-             * 브라우저에서 서버쪽으로 요청이오는 모든 데이터는 InputStream에 들어있다.
-             * 서버에서 브라우저로 데이터를 보낼 때는 OutputStream에 실어서 보낸다.
-             * InputStream을 바로 읽기는 어렵기 때문에 BufferedReader로 변환해서 header파일을 한줄 씩 읽는다.
-             * Header 마지막에는 빈 문자열이 들어있다.
-             **/
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String line = br.readLine();
             String url = HttpRequestUtils.getUrl(line);

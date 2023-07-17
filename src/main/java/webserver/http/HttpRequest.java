@@ -1,6 +1,7 @@
 package webserver.http;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,10 +11,10 @@ public class HttpRequest {
     private final String url;
     private final String version;
 
-    private final Map<String, String> headers = new HashMap();
+    private final Map<String, String> headers = new HashMap<>();
 
     private HttpRequest(InputStream in) throws Exception {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
         String requestLine = bufferedReader.readLine();
         String[] requestLineToken = requestLine.split(" ");
         method = requestLineToken[0];
@@ -21,8 +22,8 @@ public class HttpRequest {
         version = requestLineToken[2];
 
         String header = bufferedReader.readLine();
-        while (!header.equals("")) {
-            String[] headerToken = header.split(": ");
+        while (header != null && !header.equals("")) { //테스트 할 때 null이 들어감 why?
+            String[] headerToken = header.split(":");
             headers.put(headerToken[0], headerToken[1]);
             header = bufferedReader.readLine();
         }

@@ -8,8 +8,8 @@ import java.nio.file.Files;
 public class HttpResponse {
 
     private static final String templatesDirectoryPath = "src/main/resources/templates";
-    private byte[] body;
-    private DataOutputStream dos;
+    private final byte[] body;
+    private final DataOutputStream dos;
 
     private HttpResponse(OutputStream out, String url) throws Exception {
         dos = new DataOutputStream(out);
@@ -19,10 +19,12 @@ public class HttpResponse {
     public static HttpResponse createResponse(OutputStream out, String url) throws Exception {
         return new HttpResponse(out, url);
     }
-    public void send() throws Exception{
+
+    public void send() throws Exception {
         response200Header();
         responseBody();
     }
+
     private void response200Header() throws Exception {
         dos.writeBytes("HTTP/1.1 200 OK \r\n");
         dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");

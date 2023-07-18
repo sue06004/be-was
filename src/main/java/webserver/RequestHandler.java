@@ -2,7 +2,9 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.controller.FrontController;
 import webserver.http.HttpRequest;
+import webserver.view.View;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -31,12 +33,16 @@ public class RequestHandler implements Runnable {
             String url = request.getUrl();
             logRequest(request);
 
+            FrontController frontController = new FrontController();
+
+            byte[] body = frontController.service(request);
             DataOutputStream dos = new DataOutputStream(out);
 
-            byte[] body = Files.readAllBytes(new File(templatesDirectoryPath + url).toPath());
+            View view = new View(dos, body);
+            view.render();
 
-            response200Header(dos,body);
-            responseBody(dos,body);
+//            response200Header(dos,body);
+//            responseBody(dos,body);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

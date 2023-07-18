@@ -8,7 +8,7 @@ import java.util.Map;
 public class HttpRequest {
 
     private final String method;
-    private final String url;
+    private String url;
     private final String version;
 
     private Map<String, String> queryMap = new HashMap<>();
@@ -34,15 +34,16 @@ public class HttpRequest {
     }
 
     private void setQueryMap() {
-        if (!url.contains("\\?")) {
+        if (!url.contains("?")) {
             return;
         }
         String queryLine = url.split("\\?")[1];
+        url = url.split("\\?")[0];
         String[] queryList = queryLine.split("&");
         for (String query : queryList) {
             queryMap.put(query.split("=")[0], query.split("=")[1]);
         }
-
+        System.out.println(queryMap);
     }
 
     public static HttpRequest createRequest(InputStream in) throws Exception {

@@ -3,16 +3,20 @@ package webserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
 
+import java.io.DataOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private final Socket connection;
+
+    private static final String templatesDirectoryPath = "src/main/resources/templates";
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -27,8 +31,12 @@ public class RequestHandler implements Runnable {
             String url = request.getUrl();
             logRequest(request);
 
-            HttpResponse response = HttpResponse.createResponse(out, url);
-            response.send();
+            DataOutputStream dos = new DataOutputStream(out);
+
+            byte[] body = Files.readAllBytes(new File(templatesDirectoryPath + url).toPath());
+
+            response200Header(dos,body);
+            responseBody(dos,body);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -43,4 +51,15 @@ public class RequestHandler implements Runnable {
         }
     }
 
+    private void response200Header(DataOutputStream dos, byte[] body) throws Exception {
+        dos.writeBytes("HTTP/1.1 200 OK \r\n");
+        dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+        dos.writeBytes("Content-Length: " + body.length + "\r\n");
+        dos.writeBytes("\r\n");
+    }
+
+    private void responseBody(DataOutputStream dos, byte[] body) throws Exception {
+        dos.write(body, 0, body.length);
+        dos.flush();
+    }
 }

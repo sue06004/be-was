@@ -8,11 +8,9 @@ import webserver.http.HttpResponse;
 import webserver.view.View;
 
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.file.Files;
 import java.util.Map;
 
 public class RequestHandler implements Runnable {

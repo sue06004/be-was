@@ -2,7 +2,7 @@ package webserver.controller;
 
 import webserver.http.HttpRequest;
 
-public class BasicController implements Controller{
+public class DefaultController implements Controller {
 
     @Override
     public String process(HttpRequest request) {

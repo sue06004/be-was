@@ -23,7 +23,6 @@ public class HttpResponse {
 
     public String getResponseHead(int bodyLength) {
         StringBuilder stringBuilder = new StringBuilder();
-        System.out.println(stateCode);
 
         if (stateCode.equals("302 Found ")) {
             stringBuilder.append("HTTP/1.1 ").append(stateCode).append("\r\n");

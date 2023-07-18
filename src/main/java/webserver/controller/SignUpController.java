@@ -6,7 +6,7 @@ import webserver.http.HttpRequest;
 
 import java.util.Map;
 
-public class CreateUserController implements Controller {
+public class SignUpController implements Controller {
 
     @Override
     public String process(HttpRequest request) {

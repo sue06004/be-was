@@ -12,7 +12,6 @@ public class View {
     }
 
     private static void responseHeader(DataOutputStream dos, byte[] body, HttpResponse response) throws Exception {
-        System.out.println(response.getResponseHead(body.length));
         dos.writeBytes(response.getResponseHead(body.length));
     }
 

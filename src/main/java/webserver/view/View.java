@@ -1,30 +1,22 @@
 package webserver.view;
 
+import webserver.http.HttpResponse;
+
 import java.io.DataOutputStream;
 
 public class View {
 
-    private final DataOutputStream dos;
-    private final byte[] body;
-
-    public View(DataOutputStream dos, byte[] body) {
-        this.dos = dos;
-        this.body = body;
+    public static void render(DataOutputStream dos, byte[] body, HttpResponse response) throws Exception{
+        responseHeader(dos, body,response);
+        responseBody(dos, body);
     }
 
-    public void render() throws Exception{
-        response200Header();
-        responseBody();
+    private static void responseHeader(DataOutputStream dos, byte[] body, HttpResponse response) throws Exception {
+        System.out.println(response.getResponseHead(body.length));
+        dos.writeBytes(response.getResponseHead(body.length));
     }
 
-    private void response200Header() throws Exception {
-        dos.writeBytes("HTTP/1.1 200 OK \r\n");
-        dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-        dos.writeBytes("Content-Length: " + body.length + "\r\n");
-        dos.writeBytes("\r\n");
-    }
-
-    private void responseBody() throws Exception {
+    private static void responseBody(DataOutputStream dos, byte[] body) throws Exception {
         dos.write(body, 0, body.length);
         dos.flush();
     }

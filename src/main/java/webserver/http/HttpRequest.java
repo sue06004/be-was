@@ -26,7 +26,7 @@ public class HttpRequest {
         setQueryMap();
 
         String header = bufferedReader.readLine();
-        while (header != null && !header.equals("")) { //테스트 할 때 null이 들어감 why?
+        while (header != null && !header.equals("")) {
             String[] headerToken = header.split(":");
             headers.put(headerToken[0], headerToken[1]);
             header = bufferedReader.readLine();
@@ -43,7 +43,6 @@ public class HttpRequest {
         for (String query : queryList) {
             queryMap.put(query.split("=")[0], query.split("=")[1]);
         }
-        System.out.println(queryMap);
     }
 
     public static HttpRequest createRequest(InputStream in) throws Exception {

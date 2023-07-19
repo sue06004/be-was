@@ -1,12 +1,11 @@
 package webserver.http;
 
-import java.util.StringTokenizer;
-
 public class HttpResponse {
 
     private String stateCode;
     private String location;
     private String contentType;
+    private byte[] body = new byte[0];
 
     private HttpResponse() {
 
@@ -22,6 +21,14 @@ public class HttpResponse {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public void setBody(byte[] body) {
+        this.body = body;
+    }
+
+    public byte[] getBody() {
+        return body;
     }
 
     public String getResponseHead(int bodyLength) {

@@ -32,8 +32,9 @@ public class RequestHandler implements Runnable {
             FrontController frontController = new FrontController();
 
             HttpResponse response = HttpResponse.createResponse();
-            byte[] body = frontController.service(request, response);
+            frontController.service(request, response);
 
+            byte[] body = response.getBody();
             DataOutputStream dos = new DataOutputStream(out);
             View.render(dos, body, response);
 

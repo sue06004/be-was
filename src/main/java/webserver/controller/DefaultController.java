@@ -15,10 +15,9 @@ public class DefaultController implements Controller {
     @Override
     public void process(HttpRequest request, HttpResponse response) throws IOException {
         String path = request.getPath();
-
         String filePath = findFilePath(path);
-        System.out.println(filePath);
         byte[] body = Files.readAllBytes(new File(filePath).toPath());
+
         response.setBody(body);
         response.setContentType(path);
         response.setStateCode(OK);

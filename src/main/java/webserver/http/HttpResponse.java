@@ -51,22 +51,8 @@ public class HttpResponse {
 
     public void setContentType(String url) {
         String extension = getExtension(url);
-        if (extension == null || extension.equals("html")) {
-            contentType = "text/html;charset=utf-8";
-        } else if (extension.equals("css")) {
-            contentType = "text/css";
-        } else if (extension.equals("js")) {
-            contentType = "text/javascript";
-        } else if (extension.equals("ico")) {
-            contentType = "image/x-ico";
-        } else if (extension.equals("png")) {
-            contentType = "image/png";
-        } else if (extension.equals("jpg")) {
-            contentType = "image/jpeg";
-        } else {
-            contentType = "text/plan";
-        }
-
+        MIME mime = MIME.getMimeByExtension(extension);
+        contentType = mime.getMime();
     }
 
     private String getExtension(String path) {

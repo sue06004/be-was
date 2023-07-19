@@ -11,7 +11,7 @@ public class HttpRequest {
     private String url;
     private String version;
     private String path;
-
+    private String body;
     private Map<String, String> queryMap = new HashMap<>();
 
     private final Map<String, String> headers = new HashMap<>();

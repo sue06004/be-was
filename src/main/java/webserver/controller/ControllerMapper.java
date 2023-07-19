@@ -7,14 +7,12 @@ import static utils.FindFilePath.findFilePath;
 
 public class ControllerMapper {
     private static Map<String, Controller> controllerMap = new HashMap<>();
-
     static {
         controllerMap.put("/user/create", new SignUpController());
     }
 
     public static Controller getController(String path) {
         String filePath = findFilePath(path);
-        System.out.println(filePath);
         Controller controller = controllerMap.get(path);
         if (controller == null) {
             if (filePath == null) {

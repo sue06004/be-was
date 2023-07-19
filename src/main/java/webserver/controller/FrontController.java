@@ -19,23 +19,33 @@ public class FrontController {
     public FrontController() {
         controllerMap.put("/user/create", new SignUpController());
 
-        controllerMap.put("/index.html", new DefaultController());
-        controllerMap.put("/user/form.html", new DefaultController());
-        controllerMap.put("/user/login.html", new DefaultController());
-        controllerMap.put("/qna/form.html", new DefaultController());
+//        controllerMap.put("/index.html", new DefaultController());
+//        controllerMap.put("/user/form.html", new DefaultController());
+//        controllerMap.put("/user/login.html", new DefaultController());
+//        controllerMap.put("/qna/form.html", new DefaultController());
     }
 
     public byte[] service(HttpRequest request, HttpResponse response) throws Exception {
-        String url = request.getPath();
-        Controller controller = controllerMap.get(url);
-
+        String path = request.getPath();
+        Controller controller = controllerMap.get(path);
+        response.setContentType(path);
         if (controller == null) {
-            response.setStateCode(NOT_FOUND); //404 Not Found
-            return new byte[0];
-        } else if (controller instanceof DefaultController) { //200 OK
-            response.setStateCode(OK);
-            String viewPath = TEMPLATES + controller.process(request);
-            return Files.readAllBytes(new File(viewPath).toPath());
+            File staticDir = new File("src/main/resources/static" + path);
+            File templateDir = new File("src/main/resources/templates" + path);
+            if (templateDir.exists()) {
+                controller = new DefaultController();
+                String viewPath = TEMPLATES + controller.process(request);
+                response.setStateCode(OK);
+                return Files.readAllBytes(new File(viewPath).toPath());
+            } else if (staticDir.exists()){
+                controller = new DefaultController();
+                String viewPath = "src/main/resources/static" + controller.process(request);
+                response.setStateCode(OK);
+                return Files.readAllBytes(new File(viewPath).toPath());
+            } else{
+                response.setStateCode(NOT_FOUND); //404 Not Found
+                return new byte[0];
+            }
         } else {
             response.setStateCode(REDIRECT); // 302 Found
             String redirectPath = controller.process(request);

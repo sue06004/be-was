@@ -1,9 +1,12 @@
 package webserver.http;
 
+import java.util.StringTokenizer;
+
 public class HttpResponse {
 
     private String stateCode;
     private String location;
+    private String contentType;
 
     private HttpResponse() {
 
@@ -27,15 +30,44 @@ public class HttpResponse {
         if (stateCode.equals("302 Found ")) {
             stringBuilder.append("HTTP/1.1 ").append(stateCode).append("\r\n");
             stringBuilder.append("Location: ").append(location).append("\r\n");
-            stringBuilder.append("Content-Type: text/html;charset=utf-8\r\n");
+            stringBuilder.append("Content-Type: ").append(contentType).append("\r\n");
             stringBuilder.append("Content-Length: ").append(bodyLength).append("\r\n");
             stringBuilder.append("\r\n");
         } else {
             stringBuilder.append("HTTP/1.1 ").append(stateCode).append("\r\n");
-            stringBuilder.append("Content-Type: text/html;charset=utf-8\r\n");
+            stringBuilder.append("Content-Type: ").append(contentType).append("\r\n");
             stringBuilder.append("Content-Length: ").append(bodyLength).append("\r\n");
             stringBuilder.append("\r\n");
         }
         return stringBuilder.toString();
+    }
+
+    public void setContentType(String url) {
+        String extension = getExtension(url);
+        if (extension == null || extension.equals("html")) {
+            contentType = "text/html;charset=utf-8";
+        } else if (extension.equals("css")) {
+            contentType = "text/css";
+        } else if (extension.equals("js")) {
+            contentType = "text/javascript";
+        } else if (extension.equals("ico")) {
+            contentType = "image/x-ico";
+        } else if (extension.equals("png")) {
+            contentType = "image/png";
+        } else if (extension.equals("jpg")) {
+            contentType = "image/jpeg";
+        } else {
+            contentType = "text/plan";
+        }
+
+    }
+
+    private String getExtension(String path) {
+        String[] pathToken = path.split("\\.");
+        int length = pathToken.length;
+        if (length == 1) {
+            return null;
+        }
+        return pathToken[length - 1];
     }
 }

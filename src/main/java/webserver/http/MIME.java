@@ -6,9 +6,10 @@ public enum MIME {
     HTML("text/html;charset=utf-8"),
     CSS("text/css"),
     JS("text/javascript"),
-    ICO("image/x-icon"),
+    ICO("image/vnd.microsoft.icon"),
     PNG("image/png"),
     JPG("image/jpeg"),
+    WOFF("application/x-font-woff"),
     OTHER("text/plain");
 
     private final String mime;

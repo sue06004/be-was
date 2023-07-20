@@ -34,7 +34,7 @@ public class HttpResponse {
     public String getResponseHead(int bodyLength) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (stateCode.equals("302 Found ")) {
+        if (stateCode.equals(HttpStateCode.REDIRECT)) {
             stringBuilder.append("HTTP/1.1 ").append(stateCode).append("\r\n");
             stringBuilder.append("Location: ").append(location).append("\r\n");
             stringBuilder.append("Content-Type: ").append(contentType).append("\r\n");

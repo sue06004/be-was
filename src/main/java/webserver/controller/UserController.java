@@ -1,5 +1,6 @@
 package webserver.controller;
 
+import annotation.RequestMapping;
 import db.Database;
 import model.User;
 import webserver.http.HttpRequest;
@@ -9,11 +10,11 @@ import java.util.Map;
 
 import static webserver.http.HttpStateCode.REDIRECT;
 
-public class SignUpController implements Controller {
+public class UserController {
 
-    @Override
-    public void process(HttpRequest request, HttpResponse response) {
 
+    @RequestMapping("/user/create")
+    public void signUp(HttpRequest request, HttpResponse response) {
         Map<String, String> queryMap = request.getQueryMap();
         String userId = queryMap.get("userId");
         String password = queryMap.get("password");

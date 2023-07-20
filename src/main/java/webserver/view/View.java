@@ -6,7 +6,8 @@ import java.io.DataOutputStream;
 
 public class View {
 
-    public static void render(DataOutputStream dos, byte[] body, HttpResponse response) throws Exception{
+    public static void render(DataOutputStream dos, HttpResponse response) throws Exception{
+        byte[] body = response.getBody();
         responseHeader(dos, body,response);
         responseBody(dos, body);
     }

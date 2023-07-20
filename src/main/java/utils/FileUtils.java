@@ -2,7 +2,7 @@ package utils;
 
 import java.io.File;
 
-public class FindFilePath {
+public class FileUtils {
 
     private static final String TEMPLATES = "src/main/resources/templates";
     private static final String STATIC = "src/main/resources/static";

@@ -2,7 +2,7 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.controller.FrontController;
+import webserver.controller.ControllerHandler;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.view.View;
@@ -27,16 +27,14 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             HttpRequest request = HttpRequest.createRequest(in);
+            HttpResponse response = HttpResponse.createResponse();
             logRequest(request);
 
-            FrontController frontController = new FrontController();
+            ControllerHandler controllerHandler = new ControllerHandler();
+            controllerHandler.service(request, response);
 
-            HttpResponse response = HttpResponse.createResponse();
-            frontController.service(request, response);
-
-            byte[] body = response.getBody();
             DataOutputStream dos = new DataOutputStream(out);
-            View.render(dos, body, response);
+            View.render(dos, response);
 
         } catch (Exception e) {
             logger.error(e.getMessage());

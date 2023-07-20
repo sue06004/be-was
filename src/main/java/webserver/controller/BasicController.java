@@ -7,21 +7,21 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static utils.FindFilePath.findFilePath;
+import static webserver.http.HttpStateCode.NOT_FOUND;
 import static webserver.http.HttpStateCode.OK;
 
-public class DefaultController implements Controller {
+public class BasicController {
 
-    @Override
-    public void process(HttpRequest request, HttpResponse response) throws IOException {
+    public void handleFileNotFound(HttpRequest request, HttpResponse response) {
+        response.setStateCode(NOT_FOUND);
+    }
+
+    public void handleFileFound(HttpRequest request, HttpResponse response, String filePath) throws IOException {
         String path = request.getPath();
-        String filePath = findFilePath(path);
         byte[] body = Files.readAllBytes(new File(filePath).toPath());
 
         response.setBody(body);
         response.setContentType(path);
         response.setStateCode(OK);
     }
-
-
 }

@@ -6,7 +6,7 @@ public enum MIME {
     HTML("text/html;charset=utf-8"),
     CSS("text/css"),
     JS("text/javascript"),
-    ICO("image/x-ico"),
+    ICO("image/x-icon"),
     PNG("image/png"),
     JPG("image/jpeg"),
     OTHER("text/plain");

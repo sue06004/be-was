@@ -10,6 +10,7 @@ public enum MIME {
     PNG("image/png"),
     JPG("image/jpeg"),
     WOFF("application/x-font-woff"),
+    WOFF2("font/woff2"),
     OTHER("text/plain");
 
     private final String mime;

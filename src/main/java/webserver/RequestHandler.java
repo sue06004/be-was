@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import webserver.controller.ControllerHandler;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.http.RequestHeader;
 import webserver.view.View;
 
 import java.io.DataOutputStream;
@@ -44,7 +45,7 @@ public class RequestHandler implements Runnable {
     public static void logRequest(HttpRequest request) {
         logger.debug("request line: {} {} {}", request.getMethod(), request.getUrl(), request.getVersion());
 
-        Map<String, String> headers = request.getHeaders();
+        RequestHeader headers = request.getHeaders();
         for (String header : headers.keySet()) {
             logger.debug("header : {}: {}", header, headers.get(header));
         }

@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface RequestMapping {
     String value();
-    String method() default "";
+    String method() default "GET";
 }

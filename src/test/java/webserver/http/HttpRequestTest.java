@@ -52,7 +52,7 @@ public class HttpRequestTest {
         headers.put("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
 
         HttpRequest request = HttpRequest.createRequest(inputStream);
-        Map<String, String> requestHeaders = request.getHeaders();
+        RequestHeader requestHeaders = request.getHeaders();
 
         SoftAssertions a = new SoftAssertions();
         for (String headerName : requestHeaders.keySet()) {

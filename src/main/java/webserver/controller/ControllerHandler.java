@@ -23,13 +23,20 @@ public class ControllerHandler {
         Method[] declaredMethod = userController.getDeclaredMethods();
         for (Method method : declaredMethod) {
             RequestMapping requestMappingAnnotation = method.getAnnotation(RequestMapping.class);
-            String url = requestMappingAnnotation.value();
-            if (url.equals(path)) {
+            if (checkAnnotation(request, requestMappingAnnotation)) {
                 method.invoke(userController.newInstance(), request, response);
                 return;
             }
         }
         handleBasicController(request, response, path);
+    }
+
+    private boolean checkAnnotation(HttpRequest request, RequestMapping requestMapping) {
+        String requestPath = request.getPath();
+        String annotationUrl = requestMapping.value();
+        String requestMethod = request.getMethod();
+        String annotationMethod = requestMapping.method();
+        return requestPath.equals(annotationUrl) && requestMethod.equals(annotationMethod);
     }
 
     private void handleBasicController(HttpRequest request, HttpResponse response, String path) throws IOException {

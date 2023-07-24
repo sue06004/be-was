@@ -11,7 +11,6 @@ import static webserver.http.HttpStateCode.REDIRECT;
 
 public class UserController {
 
-
     @RequestMapping(value = "/user/create", method = "POST")
     public void signUp(HttpRequest request, HttpResponse response) {
         QueryParam queryParam = request.getQueryParam();
@@ -21,7 +20,6 @@ public class UserController {
         String email = queryParam.get("email");
         Database.addUser(new User(userId, password, name, email));
 
-        response.setContentType(request.getPath());
         response.setStateCode(REDIRECT);
         response.setLocation("/index.html");
 
@@ -33,7 +31,13 @@ public class UserController {
         String userId = queryParam.get("userId");
         String password = queryParam.get("password");
 
-        response.setContentType(request.getPath());
+        User findUser = Database.findUserById(userId);
+        if(findUser == null || !findUser.getPassword().equals(password)){
+            response.setStateCode(REDIRECT);
+            response.setLocation("/user/login_failed.html");
+            return;
+        }
+
         response.setStateCode(REDIRECT);
         response.setLocation("/index.html");
     }

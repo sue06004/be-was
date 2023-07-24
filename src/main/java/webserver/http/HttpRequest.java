@@ -27,9 +27,15 @@ public class HttpRequest {
         String requestLine = bufferedReader.readLine();
 
         parseRequestLine(requestLine);
-        setGetQueryParam();
+        if (method.equals("GET") && url.contains("?")) {
+            parseQueryParam();
+        } else {
+            path = url;
+        }
         parseHeader(bufferedReader);
-        setPostQueryParam(bufferedReader);
+        if (method.equals("POST")) {
+            parseBody(bufferedReader);
+        }
     }
 
     private void parseRequestLine(String requestLine) {
@@ -42,39 +48,40 @@ public class HttpRequest {
 
     private void parseHeader(BufferedReader bufferedReader) throws Exception {
         String header = bufferedReader.readLine();
+
         while (header != null && !header.equals("")) {
-            String[] headerToken = header.split(":"); //todo localhost:8080 잘림
-            headers.put(headerToken[0], headerToken[1].trim());
+            String headerKey = header.substring(0, header.indexOf(":"));
+            String headerValue = header.substring(header.indexOf(":") + 1).trim();
+
+            headers.put(headerKey, headerValue);
             header = bufferedReader.readLine();
         }
     }
 
-    private void setGetQueryParam() {
-        if (method.equals("POST") || !url.contains("?")) {
-            path = url;
-            return;
-        }
+    private void parseQueryParam() { // method가 get일 때 parameter 파싱
         String queryLine = url.split("\\?")[1];
-        path = url.split("\\?")[0];
         String[] queryList = queryLine.split("&");
+
         for (String query : queryList) {
             queryParam.put(query.split("=")[0], query.split("=")[1]);
         }
+
+        path = url.split("\\?")[0];
     }
 
-    private void setPostQueryParam(BufferedReader bufferedReader) throws IOException {
-        if(method.equals("POST")){
-            logger.info(headers.get("Content-Length"));
-            StringBuilder stringBody = new StringBuilder();
-            for(int i=0; i<Integer.parseInt(headers.get("Content-Length")); i++){
-                stringBody.append((char)bufferedReader.read());
-            }
-            String body = stringBody.toString();
-            String[] bodyToken = body.split("&");
-            for(String query : bodyToken){
-                String[] queryToken = query.split("=");
-                queryParam.put(queryToken[0],queryToken[1]);
-            }
+    private void parseBody(BufferedReader bufferedReader) throws IOException { // method가 post일 때 body 파싱
+        StringBuilder stringBody = new StringBuilder();
+
+        for (int i = 0; i < Integer.parseInt(headers.get("Content-Length")); i++) {
+            stringBody.append((char) bufferedReader.read());
+        }
+
+        String body = stringBody.toString();
+        String[] bodyToken = body.split("&");
+
+        for (String query : bodyToken) {
+            String[] queryToken = query.split("=");
+            queryParam.put(queryToken[0], queryToken[1]);
         }
     }
 

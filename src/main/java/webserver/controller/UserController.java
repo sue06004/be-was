@@ -20,8 +20,15 @@ public class UserController {
         String password = queryParam.get("password");
         String name = queryParam.get("name");
         String email = queryParam.get("email");
-        Database.addUser(new User(userId, password, name, email));
 
+        User findUser = Database.findUserById(userId);
+        if(findUser != null){
+            response.setStateCode(REDIRECT);
+            response.setContentType(request.getPath());
+            response.setLocation("/user/form_failed.html");
+            return;
+        }
+        Database.addUser(new User(userId, password, name, email));
         response.setStateCode(REDIRECT);
         response.setLocation("/index.html");
 

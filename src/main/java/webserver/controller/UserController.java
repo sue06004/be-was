@@ -34,11 +34,16 @@ public class UserController {
         User findUser = Database.findUserById(userId);
         if(findUser == null || !findUser.getPassword().equals(password)){
             response.setStateCode(REDIRECT);
+            response.setContentType(request.getPath());
             response.setLocation("/user/login_failed.html");
             return;
         }
 
+        response.setContentType(request.getPath());
         response.setStateCode(REDIRECT);
         response.setLocation("/index.html");
+        if(request.getHeaders().get("Cookie") == null){
+            response.setCookie("sid=12345; path=/");
+        }
     }
 }

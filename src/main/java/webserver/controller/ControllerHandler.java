@@ -24,12 +24,11 @@ public class ControllerHandler {
 
         for (Method method : declaredMethod) {
             RequestMapping requestMappingAnnotation = method.getAnnotation(RequestMapping.class);
-            if (checkAnnotation(request, requestMappingAnnotation)) {
+            if (requestMappingAnnotation != null && checkAnnotation(request, requestMappingAnnotation)) {
                 method.invoke(userController.newInstance(), request, response);
                 return;
             }
         }
-
         handleStaticFile(request, response, path);
     }
 

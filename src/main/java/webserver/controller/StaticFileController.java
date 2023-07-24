@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import static webserver.http.HttpStateCode.NOT_FOUND;
 import static webserver.http.HttpStateCode.OK;
 
-public class BasicController {
+public class StaticFileController {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     public void handleFileNotFound(HttpRequest request, HttpResponse response) {
@@ -23,6 +23,7 @@ public class BasicController {
     public void handleFileFound(HttpRequest request, HttpResponse response, String filePath) throws IOException {
         String path = request.getPath();
         byte[] body = Files.readAllBytes(new File(filePath).toPath());
+
         response.setBody(body);
         response.setContentType(path);
         response.setStateCode(OK);

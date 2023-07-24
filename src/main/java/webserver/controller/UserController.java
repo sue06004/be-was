@@ -27,7 +27,7 @@ public class UserController {
 
     }
 
-    @RequestMapping(value = "/user/login", method = "post")
+    @RequestMapping(value = "/user/login", method = "POST")
     public void login(HttpRequest request, HttpResponse response) {
         QueryParam queryParam = request.getQueryParam();
         String userId = queryParam.get("userId");

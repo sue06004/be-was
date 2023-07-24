@@ -2,10 +2,12 @@ package webserver.controller;
 
 import annotation.RequestMapping;
 import db.Database;
+import db.SessionDatabase;
 import model.User;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.QueryParam;
+import webserver.http.Session;
 
 import static webserver.http.HttpStateCode.REDIRECT;
 
@@ -32,7 +34,7 @@ public class UserController {
         String password = queryParam.get("password");
 
         User findUser = Database.findUserById(userId);
-        if(findUser == null || !findUser.getPassword().equals(password)){
+        if(findUser == null || !findUser.getPassword().equals(password)){ //로그인 정보가 잘못됬으면
             response.setStateCode(REDIRECT);
             response.setContentType(request.getPath());
             response.setLocation("/user/login_failed.html");
@@ -42,8 +44,12 @@ public class UserController {
         response.setContentType(request.getPath());
         response.setStateCode(REDIRECT);
         response.setLocation("/index.html");
-        if(request.getHeaders().get("Cookie") == null){
-            response.setCookie("sid=12345; path=/");
+        //쿠키 설정
+        String requestCookie = request.getHeaders().get("Cookie");
+        if(requestCookie == null || !requestCookie.contains("sid")){
+            String sessionId = Session.createSessionId();
+            SessionDatabase.add(sessionId, userId);
+            response.setCookie("sid="+sessionId+"; path=/");
         }
     }
 }

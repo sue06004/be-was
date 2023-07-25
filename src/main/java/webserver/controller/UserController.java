@@ -12,6 +12,7 @@ import webserver.http.*;
 import javax.xml.crypto.Data;
 import java.io.*;
 import java.nio.file.Files;
+import java.util.Collection;
 import java.util.StringTokenizer;
 
 import static webserver.http.HttpStateCode.OK;
@@ -86,20 +87,42 @@ public class UserController {
             response.setLocation("/user/login.html");
             return;
         }
-        String filePath = "src/main/resources/templates/usr/list.html";
-        String userId = SessionDatabase.get(sessionId);
-        User user = Database.findUserById(userId);
-        StringBuilder indexBuilder = new StringBuilder();
+        String filePath = "src/main/resources/templates/user/list.html";
+        StringBuilder listBuilder = new StringBuilder();
         File indexFile = new File(filePath);
         String line;
-        BufferedReader index = new BufferedReader(new FileReader(indexFile));
-        while ((line = index.readLine()) != null) {
-            if (line.contains("")) {
-
-            } else if (!line.contains("{login}") && !line.contains("{signup}")) {
-                indexBuilder.append(line);
+        BufferedReader list = new BufferedReader(new FileReader(indexFile));
+        int num=1;
+        while ((line = list.readLine()) != null) {
+            if (line.contains("{tbody}")) {
+                listBuilder.append("<tbody>");
+                Collection<User> allUsers = Database.findAll();
+                for(User user : allUsers){
+                    if(user==null){
+                        break;
+                    }
+                    listBuilder.append("<tr>");
+                    listBuilder.append("<th scope=\"row\">")
+                            .append(num)
+                            .append("</th> <td>")
+                            .append(user.getUserId())
+                            .append("</td> <td>")
+                            .append(user.getName())
+                            .append("</td> <td>")
+                            .append(user.getEmail())
+                            .append("</td><td><a href=\"#\" class=\"btn btn-success\" role=\"button\">수정</a></td>");
+                    listBuilder.append("</tr>");
+                    num++;
+                }
+                listBuilder.append("</tbody>");
+                while(!list.readLine().contains("</tbody>"));
+            } else {
+                listBuilder.append(line);
             }
         }
+        byte[] body = listBuilder.toString().getBytes();
+        setResponse(request, response, body);
+
     }
 
     @RequestMapping("/index.html")
@@ -139,15 +162,15 @@ public class UserController {
         String cookies = headers.get("Cookie");
         String sessionId = null;
         if (cookies != null) {
-            StringTokenizer cookieToken = new StringTokenizer(cookies, "=");
             sessionId = getSessionFromCookie(cookies);
         }
+        logger.debug("session = {}", sessionId);
         return sessionId;
     }
 
     private String getSessionFromCookie(String cookies) {
         StringTokenizer cookieToken = new StringTokenizer(cookies, "=");
-        while (cookies != null && cookieToken.hasMoreTokens()) {
+        while (cookieToken.hasMoreTokens()) {
             String cookie = cookieToken.nextToken();
             if (cookie.equals("sid")) {
                 return cookieToken.nextToken();

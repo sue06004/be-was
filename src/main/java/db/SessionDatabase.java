@@ -12,7 +12,7 @@ public class SessionDatabase {
 
     }
 
-    public static void add(String userId, String sessionId){
+    public static void add(String sessionId, String userId){
         sessionMap.put(sessionId, userId);
     }
 

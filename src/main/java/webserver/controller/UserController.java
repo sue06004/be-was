@@ -11,6 +11,7 @@ import webserver.http.*;
 
 import javax.xml.crypto.Data;
 import java.io.*;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.StringTokenizer;
@@ -28,13 +29,14 @@ public class UserController {
     private static String EMAIL = "email";
 
     @RequestMapping(value = "/user/create", method = "POST")
-    public void signUp(HttpRequest request, HttpResponse response) {
+    public void signUp(HttpRequest request, HttpResponse response) throws UnsupportedEncodingException {
         QueryParam queryParam = request.getQueryParam();
         String userId = queryParam.get(USERID);
         String password = queryParam.get(PASSWORD);
         String name = queryParam.get(NAME);
         String email = queryParam.get(EMAIL);
-
+        System.out.println(name);
+        System.out.println(email);
         User findUser = Database.findUserById(userId);
         if (findUser != null) { //이미 존재하는 id일 경우
             response.setStateCode(REDIRECT);

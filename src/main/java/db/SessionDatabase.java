@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class SessionDatabase {
 
-    private static Map<String, String>  sessionMap = Maps.newHashMap();
+    private static Map<String, String>  sessionMap = Maps.newHashMap(); //todo: concurrentmap 이용
 
     private SessionDatabase(){
 

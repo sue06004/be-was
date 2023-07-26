@@ -30,15 +30,25 @@ public class RequestHandler implements Runnable {
             HttpResponse response = HttpResponse.createResponse();
             logRequest(request);
 
-            FrontController frontController = new FrontController();
+            FrontController frontController = new FrontController(); //todo :싱글톤으로 구현하는게 어떤가
             frontController.service(request, response);
 
             DataOutputStream dos = new DataOutputStream(out);
-            View.render(dos, response);
-
+            responseHeader(dos, response);
+            responseBody(dos, response);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private static void responseHeader(DataOutputStream dos, HttpResponse response) throws Exception {
+        dos.writeBytes(response.getResponseHead());
+    }
+
+    private static void responseBody(DataOutputStream dos, HttpResponse response) throws Exception {
+        byte[] body = response.getBody();
+        dos.write(body, 0, body.length);
+        dos.flush();
     }
 
     public static void logRequest(HttpRequest request) {

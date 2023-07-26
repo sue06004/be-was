@@ -73,7 +73,7 @@ public class HttpRequest {
     private void parseBody(BufferedReader bufferedReader) throws IOException { // method가 post일 때 body 파싱
         StringBuilder stringBody = new StringBuilder();
 
-        for (int i = 0; i < Integer.parseInt(headers.get("Content-Length")); i++) {
+        for (int i = 0; i < Integer.parseInt(headers.get("Content-Length")); i++) { //todo: bufferedReader의 read메소드 이용
             stringBody.append((char) bufferedReader.read());
         }
 
@@ -110,7 +110,7 @@ public class HttpRequest {
         return headers;
     }
 
-    public Parameter getQueryParam() {
+    public Parameter getParam() {
         return parameter;
     }
 }

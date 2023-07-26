@@ -3,16 +3,16 @@ package webserver.http;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QueryParam {
+public class Parameter {
 
-    private Map<String, String> queryMap = new HashMap<>();
+    private Map<String, String> paramMap = new HashMap<>();
 
     public void put(String key, String value) {
-        queryMap.put(key, value);
+        paramMap.put(key, value);
     }
 
     public String get(String key) {
-        return queryMap.get(key);
+        return paramMap.get(key);
     }
 
 }

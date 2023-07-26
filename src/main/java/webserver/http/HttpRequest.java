@@ -20,7 +20,7 @@ public class HttpRequest {
     private String version;
     private String path;
 
-    private QueryParam queryParam = new QueryParam();
+    private Parameter parameter = new Parameter();
     private final RequestHeader headers = new RequestHeader();
 
     private HttpRequest(InputStream in) throws Exception {
@@ -64,7 +64,7 @@ public class HttpRequest {
         String[] queryList = queryLine.split("&");
 
         for (String query : queryList) {
-            queryParam.put(query.split("=")[0], query.split("=")[1]);
+            parameter.put(query.split("=")[0], query.split("=")[1]);
         }
 
         path = url.split("\\?")[0];
@@ -82,7 +82,7 @@ public class HttpRequest {
 
         for (String query : bodyToken) {
             String[] queryToken = query.split("=");
-            queryParam.put(queryToken[0], URLDecoder.decode(queryToken[1],"UTF-8"));
+            parameter.put(queryToken[0], URLDecoder.decode(queryToken[1],"UTF-8"));
         }
     }
 
@@ -110,7 +110,7 @@ public class HttpRequest {
         return headers;
     }
 
-    public QueryParam getQueryParam() {
-        return queryParam;
+    public Parameter getQueryParam() {
+        return parameter;
     }
 }

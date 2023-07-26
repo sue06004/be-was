@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 import webserver.RequestHandler;
 import webserver.http.*;
 
-import javax.xml.crypto.Data;
 import java.io.*;
-import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.StringTokenizer;
@@ -30,11 +28,11 @@ public class UserController {
 
     @RequestMapping(value = "/user/create", method = "POST")
     public void signUp(HttpRequest request, HttpResponse response) throws UnsupportedEncodingException {
-        QueryParam queryParam = request.getQueryParam();
-        String userId = queryParam.get(USERID);
-        String password = queryParam.get(PASSWORD);
-        String name = queryParam.get(NAME);
-        String email = queryParam.get(EMAIL);
+        Parameter parameter = request.getQueryParam();
+        String userId = parameter.get(USERID);
+        String password = parameter.get(PASSWORD);
+        String name = parameter.get(NAME);
+        String email = parameter.get(EMAIL);
         System.out.println(name);
         System.out.println(email);
         User findUser = Database.findUserById(userId);
@@ -52,9 +50,9 @@ public class UserController {
 
     @RequestMapping(value = "/user/login", method = "POST")
     public void login(HttpRequest request, HttpResponse response) {
-        QueryParam queryParam = request.getQueryParam();
-        String userId = queryParam.get(USERID);
-        String password = queryParam.get(PASSWORD);
+        Parameter parameter = request.getQueryParam();
+        String userId = parameter.get(USERID);
+        String password = parameter.get(PASSWORD);
 
         User findUser = Database.findUserById(userId);
         if (findUser == null || !findUser.getPassword().equals(password)) { //로그인 정보가 잘못됬으면

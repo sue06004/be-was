@@ -2,7 +2,7 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.controller.ControllerHandler;
+import webserver.controller.FrontController;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.RequestHeader;
@@ -12,7 +12,6 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -31,8 +30,8 @@ public class RequestHandler implements Runnable {
             HttpResponse response = HttpResponse.createResponse();
             logRequest(request);
 
-            ControllerHandler controllerHandler = new ControllerHandler();
-            controllerHandler.service(request, response);
+            FrontController frontController = new FrontController();
+            frontController.service(request, response);
 
             DataOutputStream dos = new DataOutputStream(out);
             View.render(dos, response);

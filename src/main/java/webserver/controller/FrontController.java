@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class ControllerHandler {
+public class FrontController {
     public void service(HttpRequest request, HttpResponse response) throws Exception {
         String path = request.getPath();
 

@@ -27,14 +27,13 @@ public class UserController {
     private static String EMAIL = "email";
 
     @RequestMapping(value = "/user/create", method = "POST")
-    public void signUp(HttpRequest request, HttpResponse response) throws UnsupportedEncodingException {
+    public void signUp(HttpRequest request, HttpResponse response) {
         Parameter parameter = request.getQueryParam();
         String userId = parameter.get(USERID);
         String password = parameter.get(PASSWORD);
         String name = parameter.get(NAME);
         String email = parameter.get(EMAIL);
-        System.out.println(name);
-        System.out.println(email);
+
         User findUser = Database.findUserById(userId);
         if (findUser != null) { //이미 존재하는 id일 경우
             response.setStateCode(REDIRECT);

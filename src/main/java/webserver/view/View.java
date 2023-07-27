@@ -29,20 +29,15 @@ public class View {
         String line;
         BufferedReader fileReader = new BufferedReader(new FileReader(file));
         while((line=fileReader.readLine()) != null){
-            if(filePath.endsWith("html") && line.contains("{%")){
-                logger.debug(line);
+            if(line.contains("{%")){
                 String modelKey = line.substring(line.indexOf("{%")+2,line.indexOf("}"));
                 Object modelValue = model.getAttribute(modelKey);
                 if(modelValue instanceof List){
-                    logger.debug("list");
                     for(Object value :(List)model.getAttribute(modelKey)){
-                        logger.debug("for");
                         stringBuilder.append((String)value);
-                        logger.debug("list : {}", (String)value);
                     }
                 } else {
                     line = line.replace("{%"+modelKey+"}",(String)modelValue);
-                    logger.debug("line = {}",line);
                     stringBuilder.append(line);
                 }
             }else {

@@ -26,7 +26,7 @@ public class Model {
         return model.get(key);
     }
 
-    public void setModelLoginStatus(String sessionId){
+    public void setModelLoginStatus(String sessionId){ //로그인 상태일 때 항상 model에 적용되야 하는 값
         String userId = SessionDatabase.get(sessionId);
         User user = Database.findUserById(userId);
         this.setAttribute("userName", user.getName() + "님 안녕하세요");

@@ -18,10 +18,9 @@ public class FrontController {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     public void service(HttpRequest request, HttpResponse response) throws Exception {
-        String urlPath = request.getPath();
         Model model = new Model();
 
-        String filePath = findControllerAndInvoke(request, urlPath, model);
+        String filePath = findControllerAndInvoke(request, model);
         if (filePath == null) {
             response.setStateCode(HttpStateCode.NOT_FOUND);
         } else if (filePath.contains("redirect:")) {
@@ -32,6 +31,10 @@ public class FrontController {
             response.setContentType(filePath);
             response.setBody(View.render(model, filePath));
         }
+        setSession(response, model);
+    }
+
+    private void setSession(HttpResponse response, Model model) {
         String sessionId = (String) model.getAttribute("sid");
         if (sessionId != null) {
             String sessionAge = (String) model.getAttribute("sessionAge");
@@ -42,7 +45,7 @@ public class FrontController {
         }
     }
 
-    private String findControllerAndInvoke(HttpRequest request, String path, Model model)
+    private String findControllerAndInvoke(HttpRequest request, Model model)
             throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Class<UserController> userController = UserController.class;
         Method[] declaredMethod = userController.getDeclaredMethods();

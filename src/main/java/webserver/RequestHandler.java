@@ -30,7 +30,7 @@ public class RequestHandler implements Runnable {
             HttpResponse response = HttpResponse.createResponse();
             logRequest(request);
 
-            FrontController frontController = new FrontController(); //todo :싱글톤으로 구현하는게 어떤가
+            FrontController frontController = new FrontController(); //todo: 싱글톤으로 구현하는게 어떤가
             frontController.service(request, response);
 
             DataOutputStream dos = new DataOutputStream(out);

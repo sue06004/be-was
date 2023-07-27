@@ -56,6 +56,7 @@ public class UserController {
             return "redirect:/user/login_failed.html";
         }
         model.setAttribute("sid", setResponseCookie(request, userId));//쿠키 설정
+        model.setAttribute("maxAge", "3600");
         return "redirect:/index.html";
     }
 
@@ -145,4 +146,13 @@ public class UserController {
         return null;
     }
 
+    @RequestMapping("/user/logout")
+    public String logOut(HttpRequest request, Model model){
+        String sessionId = getSessionFromHeader(request.getHeaders());
+        if(sessionId !=null){
+            model.setAttribute("sid",sessionId);
+            model.setAttribute("maxAge","0");
+        }
+        return "redirect:/index.html";
+    }
 }

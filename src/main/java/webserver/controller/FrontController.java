@@ -1,6 +1,7 @@
 package webserver.controller;
 
 import annotation.RequestMapping;
+import db.SessionDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.Model;
@@ -33,7 +34,7 @@ public class FrontController {
         }
         String sessionId = (String) model.getAttribute("sid");
         if (sessionId != null) {
-            response.setCookie("sid=" + sessionId + "; path=/");
+            response.setCookie("sid=" + sessionId + "; max-age="+model.getAttribute("maxAge")+"; path=/");
         }
     }
 

@@ -6,17 +6,15 @@ import db.SessionDatabase;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.Model;
+import webserver.model.Model;
 import webserver.RequestHandler;
 import webserver.http.HttpRequest;
 import webserver.http.Parameter;
-import webserver.http.RequestHeader;
 import webserver.http.Session;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.StringTokenizer;
 
 public class UserController {
 
@@ -56,7 +54,8 @@ public class UserController {
             return "redirect:/user/login_failed.html";
         }
         model.setAttribute("sid", setResponseCookie(request, userId));//쿠키 설정
-        model.setAttribute("maxAge", "3600");
+        model.setAttribute("sessionAge", "3600");
+        model.setAttribute("logout","<li><a href=\"/user/logout\" role=\"button\">로그아웃</a></li>");
         return "redirect:/index.html";
     }
 
@@ -72,7 +71,7 @@ public class UserController {
 
     @RequestMapping(value = "/user/list.html")
     public String userList(HttpRequest request, Model model) {
-        String sessionId = getSessionFromHeader(request.getHeaders());
+        String sessionId = request.getSessionId();
         if (sessionId == null) {
             return "redirect:/user/login.html";
         }
@@ -80,7 +79,7 @@ public class UserController {
         createUserList(userList);
 
         model.setAttribute("userList", userList);
-        setModelAfterLogin(model, sessionId);
+        model.setModelLoginStatus(sessionId);
 
         return "/user/list.html";
     }
@@ -111,47 +110,20 @@ public class UserController {
 
     @RequestMapping("/index.html")
     public String indexHtml(HttpRequest request, Model model) {
-        String sessionId = getSessionFromHeader(request.getHeaders());
+        String sessionId = request.getSessionId();
         if (sessionId != null) {
-            setModelAfterLogin(model, sessionId);
+            model.setModelLoginStatus(sessionId);
         }
         return "/index.html";
     }
 
-    private void setModelAfterLogin(Model model, String sessionId) {
-        String userId = SessionDatabase.get(sessionId);
-        User user = Database.findUserById(userId);
-        model.setAttribute("userName", user.getName() + "님 안녕하세요");
-        model.setAttribute("login", "");
-        model.setAttribute("signup", "");
-    }
-
-    private String getSessionFromHeader(RequestHeader headers) {
-        String cookies = headers.get("Cookie");
-        String sessionId = null;
-        if (cookies != null) {
-            sessionId = getSessionFromCookie(cookies);
-        }
-        return sessionId;
-    }
-
-    private String getSessionFromCookie(String cookies) {
-        StringTokenizer cookieToken = new StringTokenizer(cookies, "=");
-        while (cookieToken.hasMoreTokens()) {
-            String cookie = cookieToken.nextToken();
-            if (cookie.equals("sid")) {
-                return cookieToken.nextToken();
-            }
-        }
-        return null;
-    }
-
     @RequestMapping("/user/logout")
     public String logOut(HttpRequest request, Model model){
-        String sessionId = getSessionFromHeader(request.getHeaders());
+        String sessionId = request.getSessionId();
         if(sessionId !=null){
             model.setAttribute("sid",sessionId);
-            model.setAttribute("maxAge","0");
+            model.setAttribute("sessionAge","0");
+            model.setAttribute("logout","");
         }
         return "redirect:/index.html";
     }

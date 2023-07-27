@@ -1,14 +1,10 @@
 package webserver.view;
 
-import db.Database;
-import db.SessionDatabase;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileUtils;
-import webserver.Model;
+import webserver.model.Model;
 import webserver.RequestHandler;
-import webserver.http.HttpResponse;
 
 import java.io.*;
 import java.nio.file.Files;

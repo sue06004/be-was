@@ -4,7 +4,7 @@ import annotation.RequestMapping;
 import db.SessionDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.Model;
+import webserver.model.Model;
 import webserver.RequestHandler;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
@@ -34,7 +34,11 @@ public class FrontController {
         }
         String sessionId = (String) model.getAttribute("sid");
         if (sessionId != null) {
-            response.setCookie("sid=" + sessionId + "; max-age="+model.getAttribute("maxAge")+"; path=/");
+            String sessionAge = (String) model.getAttribute("sessionAge");
+            response.setCookie("sid=" + sessionId + "; max-age=" + sessionAge + "; path=/");
+            if (sessionAge.equals("0")) {
+                SessionDatabase.remove(sessionId);
+            }
         }
     }
 
@@ -53,7 +57,7 @@ public class FrontController {
             }
         }
         StaticFileController staticFileController = new StaticFileController();
-        return staticFileController.handleStaticFile(path);
+        return staticFileController.handleStaticFile(request, model);
     }
 
     private boolean checkAnnotation(HttpRequest request, RequestMapping requestMapping) {

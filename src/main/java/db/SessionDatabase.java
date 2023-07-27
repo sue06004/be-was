@@ -19,4 +19,8 @@ public class SessionDatabase {
     public static String get(String sessionId){
         return sessionMap.get(sessionId);
     }
+
+    public static void remove(String sessionId){
+        sessionMap.remove(sessionId);
+    }
 }

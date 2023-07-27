@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.StringTokenizer;
 
 public class HttpRequest {
 
@@ -87,6 +88,27 @@ public class HttpRequest {
         bufferedReader.read(bodyBuffer, 0, bodyLength);
         String body = String.valueOf(bodyBuffer);
         return body;
+    }
+
+
+    public String getSessionId() {
+        String cookies = headers.get("Cookie");
+        String sessionId = null;
+        if (cookies != null) {
+            sessionId = getSessionFromCookie(cookies);
+        }
+        return sessionId;
+    }
+
+    private String getSessionFromCookie(String cookies) {
+        StringTokenizer cookieToken = new StringTokenizer(cookies, "=");
+        while (cookieToken.hasMoreTokens()) {
+            String cookie = cookieToken.nextToken();
+            if (cookie.equals("sid")) {
+                return cookieToken.nextToken();
+            }
+        }
+        return null;
     }
 
     public static HttpRequest createRequest(InputStream in) throws Exception {

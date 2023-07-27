@@ -23,7 +23,7 @@ public class HttpRequest {
     private Parameter parameter = new Parameter();
     private final RequestHeader headers = new RequestHeader();
 
-    private HttpRequest(InputStream in) throws Exception {
+    private HttpRequest(InputStream in) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
         String requestLine = bufferedReader.readLine();
 
@@ -47,7 +47,7 @@ public class HttpRequest {
         version = requestLineToken[2];
     }
 
-    private void parseHeader(BufferedReader bufferedReader) throws Exception {
+    private void parseHeader(BufferedReader bufferedReader) throws IOException {
         String header = bufferedReader.readLine();
 
         while (header != null && !header.equals("")) {
@@ -71,19 +71,22 @@ public class HttpRequest {
     }
 
     private void parseBody(BufferedReader bufferedReader) throws IOException { // method가 post일 때 body 파싱
-        StringBuilder stringBody = new StringBuilder();
 
-        for (int i = 0; i < Integer.parseInt(headers.get("Content-Length")); i++) { //todo: bufferedReader의 read메소드 이용
-            stringBody.append((char) bufferedReader.read());
-        }
-
-        String body = stringBody.toString();
+        String body = getBodyString(bufferedReader);
         String[] bodyToken = body.split("&");
 
         for (String query : bodyToken) {
             String[] queryToken = query.split("=");
             parameter.put(queryToken[0], URLDecoder.decode(queryToken[1],"UTF-8"));
         }
+    }
+
+    private String getBodyString(BufferedReader bufferedReader) throws IOException {
+        int bodyLength = Integer.parseInt(headers.get("Content-Length"));
+        char[] bodyBuffer = new char[bodyLength];
+        bufferedReader.read(bodyBuffer, 0, bodyLength);
+        String body = String.valueOf(bodyBuffer);
+        return body;
     }
 
     public static HttpRequest createRequest(InputStream in) throws Exception {

@@ -6,8 +6,8 @@ import java.util.Map;
 
 public class SessionDatabase {
 
-    private static Map<String, String>  sessionMap = Maps.newHashMap(); //todo: concurrentmap 이용
-
+    //todo: guava를 사용하면 뭐가 더 좋은지 공부
+    private static Map<String, String> sessionMap = Maps.newConcurrentMap();
     private SessionDatabase(){
 
     }

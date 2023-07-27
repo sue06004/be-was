@@ -10,7 +10,6 @@ import webserver.Model;
 import webserver.RequestHandler;
 import webserver.http.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -70,12 +69,21 @@ public class UserController {
     }
 
     @RequestMapping(value = "/user/list.html")
-    public String userList(HttpRequest request, Model model) throws IOException {
+    public String userList(HttpRequest request, Model model) {
         String sessionId = getSessionFromHeader(request.getHeaders());
         if (sessionId == null) {
             return "redirect:/user/login.html";
         }
         List<String> userList = new ArrayList<>();
+        createUserList(userList);
+
+        model.setAttribute("userList", userList);
+        setModelAfterLogin(model, sessionId);
+
+        return "/user/list.html";
+    }
+
+    private void createUserList(List<String> userList) {
         Collection<User> allUser = Database.findAll();
         int userNum = 0;
         for (User user : allUser) {
@@ -97,21 +105,23 @@ public class UserController {
             stringBuilder.append("</tr>");
             userList.add(stringBuilder.toString());
         }
-        model.setAttribute("userList", userList);
-        return "/user/list.html";
     }
 
     @RequestMapping("/index.html")
-    public String indexHtml(HttpRequest request, Model model) throws IOException {
+    public String indexHtml(HttpRequest request, Model model) {
         String sessionId = getSessionFromHeader(request.getHeaders());
         if (sessionId != null) {
-            String userId = SessionDatabase.get(sessionId);
-            User user = Database.findUserById(userId);
-            model.setAttribute("userName", user.getName() + "님 안녕하세요");
-            model.setAttribute("login", "");
-            model.setAttribute("signup", "");
+            setModelAfterLogin(model, sessionId);
         }
         return "/index.html";
+    }
+
+    private void setModelAfterLogin(Model model, String sessionId) {
+        String userId = SessionDatabase.get(sessionId);
+        User user = Database.findUserById(userId);
+        model.setAttribute("userName", user.getName() + "님 안녕하세요");
+        model.setAttribute("login", "");
+        model.setAttribute("signup", "");
     }
 
     private String getSessionFromHeader(RequestHeader headers) {
@@ -133,11 +143,5 @@ public class UserController {
         }
         return null;
     }
-
-    private void setResponse(HttpRequest request, HttpResponse response, byte[] body) {
-        response.setBody(body);
-        response.setContentType(request.getPath());
-        response.setStateCode(OK);
-    }
-
+    
 }

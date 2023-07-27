@@ -22,20 +22,19 @@ public class FrontController {
         String path = request.getPath();
         Model model = new Model();
 
-        String path2 = findControllerAndInvoke(request, response, path,model);
-        if(path2 == null){
+        String path2 = findControllerAndInvoke(request, response, path, model); //todo: 변수 이름 변경
+        if (path2 == null) {
             response.setStateCode(HttpStateCode.NOT_FOUND);
-        }
-        else if(path2.contains("redirect:")){
+        } else if (path2.contains("redirect:")) {
             response.setStateCode(HttpStateCode.REDIRECT);
-            response.setLocation(path2.substring(path2.indexOf(":")+1));
-        }else{
+            response.setLocation(path2.substring(path2.indexOf(":") + 1));
+        } else {
             response.setStateCode(HttpStateCode.OK);
             response.setContentType(path2);
             response.setBody(View.render(model, path2));
         }
-        String sessionId = (String)model.getAttribute("sid");
-        if(sessionId != null){
+        String sessionId = (String) model.getAttribute("sid");
+        if (sessionId != null) {
             response.setCookie("sid=" + sessionId + "; path=/");
         }
     }
@@ -49,7 +48,7 @@ public class FrontController {
             RequestMapping requestMappingAnnotation = method.getAnnotation(RequestMapping.class);
             if (requestMappingAnnotation != null && checkAnnotation(request, requestMappingAnnotation)) {//todo: reflextion으로 생성자 만들어서 newInstance~~하는게 더 좋다.
                 Object obj = method.invoke(userController.newInstance(), request, model);
-                return (String)obj;
+                return (String) obj;
             }
         }
         return handleStaticFile(request, response, path);

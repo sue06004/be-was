@@ -4,14 +4,21 @@ import annotation.RequestMapping;
 import db.Database;
 import db.SessionDatabase;
 import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import webserver.model.Model;
+import webserver.RequestHandler;
 import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
-import webserver.http.QueryParam;
+import webserver.http.Parameter;
 import webserver.http.Session;
 
-import static webserver.http.HttpStateCode.REDIRECT;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private static String USERID = "userId";
     private static String PASSWORD = "password";
@@ -19,53 +26,105 @@ public class UserController {
     private static String EMAIL = "email";
 
     @RequestMapping(value = "/user/create", method = "POST")
-    public void signUp(HttpRequest request, HttpResponse response) {
-        QueryParam queryParam = request.getQueryParam();
-        String userId = queryParam.get(USERID);
-        String password = queryParam.get(PASSWORD);
-        String name = queryParam.get(NAME);
-        String email = queryParam.get(EMAIL);
+    public String signUp(HttpRequest request, Model model) {
+        Parameter parameter = request.getParam();
+        String userId = parameter.get(USERID);
+        String password = parameter.get(PASSWORD);
+        String name = parameter.get(NAME);
+        String email = parameter.get(EMAIL);
 
         User findUser = Database.findUserById(userId);
         if (findUser != null) { //이미 존재하는 id일 경우
-            response.setStateCode(REDIRECT);
-            response.setContentType(request.getPath());
-            response.setLocation("/user/form_failed.html");
-            return;
+            return "redirect:/user/form_failed.html";
         }
 
         Database.addUser(new User(userId, password, name, email));
-        response.setStateCode(REDIRECT);
-        response.setLocation("/index.html");
+
+        return "redirect:/index.html";
     }
 
     @RequestMapping(value = "/user/login", method = "POST")
-    public void login(HttpRequest request, HttpResponse response) {
-        QueryParam queryParam = request.getQueryParam();
-        String userId = queryParam.get(USERID);
-        String password = queryParam.get(PASSWORD);
+    public String login(HttpRequest request, Model model) {
+        Parameter parameter = request.getParam();
+        String userId = parameter.get(USERID);
+        String password = parameter.get(PASSWORD);
 
         User findUser = Database.findUserById(userId);
         if (findUser == null || !findUser.getPassword().equals(password)) { //로그인 정보가 잘못됬으면
-            response.setStateCode(REDIRECT);
-            response.setContentType(request.getPath());
-            response.setLocation("/user/login_failed.html");
-            return;
+            return "redirect:/user/login_failed.html";
         }
-
-        response.setContentType(request.getPath());
-        setResponseCookie(request, response, userId); //쿠키 설정
-        response.setStateCode(REDIRECT);
-        response.setLocation("/index.html");
-
+        model.setAttribute("sid", setResponseCookie(request, userId));//쿠키 설정
+        model.setAttribute("sessionAge", "3600");
+        model.setAttribute("logout","<li><a href=\"/user/logout\" role=\"button\">로그아웃</a></li>");
+        return "redirect:/index.html";
     }
 
-    private void setResponseCookie(HttpRequest request, HttpResponse response, String userId) {
+    private String setResponseCookie(HttpRequest request, String userId) {
         String requestCookie = request.getHeaders().get("Cookie");
         if (requestCookie == null || !requestCookie.contains("sid")) {
             String sessionId = Session.createSessionId();
             SessionDatabase.add(sessionId, userId);
-            response.setCookie("sid=" + sessionId + "; path=/");
+            return sessionId;
         }
+        return null;
+    }
+
+    @RequestMapping(value = "/user/list.html")
+    public String userList(HttpRequest request, Model model) {
+        String sessionId = request.getSessionId();
+        if (sessionId == null) {
+            return "redirect:/user/login.html";
+        }
+        List<String> userList = new ArrayList<>();
+        createUserList(userList);
+
+        model.setAttribute("userList", userList);
+        model.setModelLoginStatus(sessionId);
+
+        return "/user/list.html";
+    }
+
+    private void createUserList(List<String> userList) {
+        Collection<User> allUser = Database.findAll();
+        int userNum = 0;
+        for (User user : allUser) {
+            if (user == null) {
+                break;
+            }
+            userNum++;
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("<tr>");
+            stringBuilder.append("<th scope=\"row\">")
+                    .append(userNum)
+                    .append("</th> <td>")
+                    .append(user.getUserId())
+                    .append("</td> <td>")
+                    .append(user.getName())
+                    .append("</td> <td>")
+                    .append(user.getEmail())
+                    .append("</td><td><a href=\"#\" class=\"btn btn-success\" role=\"button\">수정</a></td>");
+            stringBuilder.append("</tr>");
+            userList.add(stringBuilder.toString());
+        }
+    }
+
+    @RequestMapping("/index.html")
+    public String indexHtml(HttpRequest request, Model model) {
+        String sessionId = request.getSessionId();
+        if (sessionId != null) {
+            model.setModelLoginStatus(sessionId);
+        }
+        return "/index.html";
+    }
+
+    @RequestMapping("/user/logout")
+    public String logOut(HttpRequest request, Model model){
+        String sessionId = request.getSessionId();
+        if(sessionId !=null){
+            model.setAttribute("sid",sessionId);
+            model.setAttribute("sessionAge","0");
+            model.setAttribute("logout","");
+        }
+        return "redirect:/index.html";
     }
 }

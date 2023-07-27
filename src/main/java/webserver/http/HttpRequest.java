@@ -8,7 +8,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.StringTokenizer;
 
 public class HttpRequest {
 
@@ -19,10 +21,10 @@ public class HttpRequest {
     private String version;
     private String path;
 
-    private QueryParam queryParam = new QueryParam();
+    private Parameter parameter = new Parameter();
     private final RequestHeader headers = new RequestHeader();
 
-    private HttpRequest(InputStream in) throws Exception {
+    private HttpRequest(InputStream in) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
         String requestLine = bufferedReader.readLine();
 
@@ -46,7 +48,7 @@ public class HttpRequest {
         version = requestLineToken[2];
     }
 
-    private void parseHeader(BufferedReader bufferedReader) throws Exception {
+    private void parseHeader(BufferedReader bufferedReader) throws IOException {
         String header = bufferedReader.readLine();
 
         while (header != null && !header.equals("")) {
@@ -63,26 +65,50 @@ public class HttpRequest {
         String[] queryList = queryLine.split("&");
 
         for (String query : queryList) {
-            queryParam.put(query.split("=")[0], query.split("=")[1]);
+            parameter.put(query.split("=")[0], query.split("=")[1]);
         }
 
         path = url.split("\\?")[0];
     }
 
     private void parseBody(BufferedReader bufferedReader) throws IOException { // method가 post일 때 body 파싱
-        StringBuilder stringBody = new StringBuilder();
 
-        for (int i = 0; i < Integer.parseInt(headers.get("Content-Length")); i++) {
-            stringBody.append((char) bufferedReader.read());
-        }
-
-        String body = stringBody.toString();
+        String body = getBodyString(bufferedReader);
         String[] bodyToken = body.split("&");
 
         for (String query : bodyToken) {
             String[] queryToken = query.split("=");
-            queryParam.put(queryToken[0], queryToken[1]);
+            parameter.put(queryToken[0], URLDecoder.decode(queryToken[1],"UTF-8"));
         }
+    }
+
+    private String getBodyString(BufferedReader bufferedReader) throws IOException {
+        int bodyLength = Integer.parseInt(headers.get("Content-Length"));
+        char[] bodyBuffer = new char[bodyLength];
+        bufferedReader.read(bodyBuffer, 0, bodyLength);
+        String body = String.valueOf(bodyBuffer);
+        return body;
+    }
+
+
+    public String getSessionId() {
+        String cookies = headers.get("Cookie");
+        String sessionId = null;
+        if (cookies != null) {
+            sessionId = getSessionFromCookie(cookies);
+        }
+        return sessionId;
+    }
+
+    private String getSessionFromCookie(String cookies) {
+        StringTokenizer cookieToken = new StringTokenizer(cookies, "=");
+        while (cookieToken.hasMoreTokens()) {
+            String cookie = cookieToken.nextToken();
+            if (cookie.equals("sid")) {
+                return cookieToken.nextToken();
+            }
+        }
+        return null;
     }
 
     public static HttpRequest createRequest(InputStream in) throws Exception {
@@ -109,7 +135,7 @@ public class HttpRequest {
         return headers;
     }
 
-    public QueryParam getQueryParam() {
-        return queryParam;
+    public Parameter getParam() {
+        return parameter;
     }
 }

@@ -2,7 +2,7 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.controller.ControllerHandler;
+import webserver.controller.FrontController;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.RequestHeader;
@@ -12,7 +12,6 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Map;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -31,15 +30,25 @@ public class RequestHandler implements Runnable {
             HttpResponse response = HttpResponse.createResponse();
             logRequest(request);
 
-            ControllerHandler controllerHandler = new ControllerHandler();
-            controllerHandler.service(request, response);
+            FrontController frontController = new FrontController(); //todo: 싱글톤으로 구현하는게 어떤가
+            frontController.service(request, response);
 
             DataOutputStream dos = new DataOutputStream(out);
-            View.render(dos, response);
-
+            responseHeader(dos, response);
+            responseBody(dos, response);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private static void responseHeader(DataOutputStream dos, HttpResponse response) throws Exception {
+        dos.writeBytes(response.getResponseHead());
+    }
+
+    private static void responseBody(DataOutputStream dos, HttpResponse response) throws Exception {
+        byte[] body = response.getBody();
+        dos.write(body, 0, body.length);
+        dos.flush();
     }
 
     public static void logRequest(HttpRequest request) {

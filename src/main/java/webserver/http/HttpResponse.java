@@ -32,14 +32,14 @@ public class HttpResponse {
         return body;
     }
 
-    public String getResponseHead(int bodyLength) {
+    public String getResponseHead() {
         StringBuilder stringBuilder = new StringBuilder();
 
         if (stateCode.equals(HttpStateCode.REDIRECT)) {
             stringBuilder.append("HTTP/1.1 ").append(stateCode).append("\r\n");
             stringBuilder.append("Location: ").append(location).append("\r\n");
             stringBuilder.append("Content-Type: ").append(contentType).append("\r\n");
-            stringBuilder.append("Content-Length: ").append(bodyLength).append("\r\n");
+            stringBuilder.append("Content-Length: ").append(body.length).append("\r\n");
             if(cookie != null){
                 stringBuilder.append("Set-Cookie: ").append(cookie).append("\r\n");
             }
@@ -47,7 +47,7 @@ public class HttpResponse {
         } else {
             stringBuilder.append("HTTP/1.1 ").append(stateCode).append("\r\n");
             stringBuilder.append("Content-Type: ").append(contentType).append("\r\n");
-            stringBuilder.append("Content-Length: ").append(bodyLength).append("\r\n");
+            stringBuilder.append("Content-Length: ").append(body.length).append("\r\n");
             stringBuilder.append("\r\n");
         }
         return stringBuilder.toString();

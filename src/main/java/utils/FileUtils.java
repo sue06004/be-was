@@ -7,16 +7,22 @@ public class FileUtils {
     private static final String TEMPLATES = "src/main/resources/templates";
     private static final String STATIC = "src/main/resources/static";
 
-    public static  String findFilePath(String path) {
-        File staticDir = new File(STATIC + path);
-        File templateDir = new File(TEMPLATES + path);
+    public static  String findFilePath(String filePath) {
+        File staticFile = new File(STATIC + filePath);
+        File templateFile = new File(TEMPLATES + filePath);
 
-        if (templateDir.exists()) {
-            return TEMPLATES + path;
-        } else if (staticDir.exists()) {
-            return STATIC + path;
+        if (templateFile.exists()) {
+            return TEMPLATES + filePath;
+        } else if (staticFile.exists()) {
+            return STATIC + filePath;
         } else {
             return null;
         }
+    }
+
+    public static boolean existFile(String filePath){
+        File staticFile = new File(STATIC + filePath);
+        File templateFile = new File(TEMPLATES + filePath);
+        return staticFile.exists() || templateFile.exists();
     }
 }

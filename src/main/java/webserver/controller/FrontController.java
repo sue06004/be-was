@@ -40,15 +40,17 @@ public class FrontController {
     }
 
     private String findControllerAndInvoke(HttpRequest request, HttpResponse response, String path, Model model)
-            throws InstantiationException, IllegalAccessException, InvocationTargetException, IOException {
+            throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Class<UserController> userController = UserController.class;
         Method[] declaredMethod = userController.getDeclaredMethods();
 
         for (Method method : declaredMethod) {
             RequestMapping requestMappingAnnotation = method.getAnnotation(RequestMapping.class);
-            if (requestMappingAnnotation != null && checkAnnotation(request, requestMappingAnnotation)) {//todo: reflextion으로 생성자 만들어서 newInstance~~하는게 더 좋다.
-                Object obj = method.invoke(userController.newInstance(), request, model);
-                return (String) obj;
+            if (requestMappingAnnotation != null && checkAnnotation(request, requestMappingAnnotation)) {
+                return (String) method.invoke(userController.getDeclaredConstructor().newInstance(), request, model);
+                // clazz.newInstance()는 더 이상 안쓰고 위와 같이 사용한다.
+                // 사용안하는 이유: http://errorprone.info/bugpattern/ClassNewInstance
+                // clazz.newInstance()는 생성자가 던지는 예외를 우회할 수 있는데 위 방법을 사용하면 생성자에서 던져지는 예외를 InvocationTargetException 으로 묶어서 처리한다. (아마)
             }
         }
         return handleStaticFile(request, response, path);
@@ -62,7 +64,7 @@ public class FrontController {
         return requestPath.equals(annotationUrl) && requestMethod.equals(annotationMethod);
     }
 
-    private String handleStaticFile(HttpRequest request, HttpResponse response, String path) throws IOException {
+    private String handleStaticFile(HttpRequest request, HttpResponse response, String path) {
         String filePath = FileUtils.findFilePath(path);
         StaticFileController controller = new StaticFileController();
         if (filePath == null) {

@@ -8,14 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.Model;
 import webserver.RequestHandler;
-import webserver.http.*;
+import webserver.http.HttpRequest;
+import webserver.http.Parameter;
+import webserver.http.RequestHeader;
+import webserver.http.Session;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import static webserver.http.HttpStateCode.OK;
 
 public class UserController {
 
@@ -143,5 +144,5 @@ public class UserController {
         }
         return null;
     }
-    
+
 }

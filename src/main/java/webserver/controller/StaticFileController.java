@@ -6,8 +6,6 @@ import webserver.RequestHandler;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 
-import java.io.IOException;
-
 public class StaticFileController {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -15,7 +13,7 @@ public class StaticFileController {
         return null;
     }
 
-    public String handleFileFound(HttpRequest request, HttpResponse response, String filePath) throws IOException {
+    public String handleFileFound(HttpRequest request, HttpResponse response, String filePath) {
         String path = request.getPath();
         return path;
     }

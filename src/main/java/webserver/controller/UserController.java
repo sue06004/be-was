@@ -54,7 +54,6 @@ public class UserController {
             return "redirect:/user/login_failed.html";
         }
         model.setAttribute("sid", setResponseCookie(request, userId));//쿠키 설정
-        model.setAttribute("sessionAge", "3600");
         model.setAttribute("logout","<li><a href=\"/user/logout\" role=\"button\">로그아웃</a></li>");
         return "redirect:/index.html";
     }

@@ -38,10 +38,12 @@ public class FrontController {
         String sessionId = (String) model.getAttribute("sid");
         if (sessionId != null) {
             String sessionAge = (String) model.getAttribute("sessionAge");
-            response.setCookie("sid=" + sessionId + "; max-age=" + sessionAge + "; path=/");
-            if (sessionAge.equals("0")) {
+            if (sessionAge != null) {
+                response.setCookie("sid=" + sessionId + "; Max-Age="+sessionAge+"; path=/");
                 SessionDatabase.remove(sessionId);
+                return;
             }
+            response.setCookie("sid=" + sessionId + "; path=/");
         }
     }
 
